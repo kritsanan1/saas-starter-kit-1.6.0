@@ -1,7 +1,7 @@
 import env from '@/lib/env';
 import { ApiError } from '@/lib/errors';
 import { prisma } from '@/lib/prisma';
-import { Invitation } from '@prisma/client';
+import { type Invitation } from '@prisma/client';
 import { randomUUID } from 'crypto';
 
 export type TeamInvitation = Pick<
@@ -32,7 +32,7 @@ FROM "public"."Invitation"
 WHERE ("public"."Invitation"."teamId" = '7974330a-c8ca-4043-9e3c-3f326d1b6973' AND "public"."Invitation"."sentViaEmail" = true) OFFSET 0
 */
 
-/**
+/*
   Bitmap Heap Scan on "Invitation"  (cost=4.16..9.51 rows=1 width=168) (actual time=0.019..0.020 rows=3 loops=1)
   Recheck Cond: ("teamId" = '7974330a-c8ca-4043-9e3c-3f326d1b6973'::text)
   Filter: "sentViaEmail"

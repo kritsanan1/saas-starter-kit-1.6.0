@@ -36,7 +36,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     req.body
   );
 
-  const user = await getUser({ email });
+  const user = await getUser({ email: email as string });
 
   if (!user) {
     throw new ApiError(400, 'User not found');
@@ -49,7 +49,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     );
   }
 
-  await deleteVerificationToken(expiredToken);
+  await deleteVerificationToken(expiredToken as string);
   await sendLockoutEmail(user, true);
 
   res.status(204).end();

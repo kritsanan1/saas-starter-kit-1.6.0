@@ -47,13 +47,13 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     where: { id: session?.user.id },
   });
 
-  if (!(await verifyPassword(currentPassword, user.password as string))) {
+  if (!(await verifyPassword(currentPassword as string, user.password as string))) {
     throw new ApiError(400, 'Your current password is incorrect');
   }
 
   await updateUser({
     where: { id: session?.user.id },
-    data: { password: await hashPassword(newPassword) },
+    data: { password: await hashPassword(newPassword as string) },
   });
 
   // Remove all sessions other than the current one

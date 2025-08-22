@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
 import { findOrCreateApp } from '@/lib/svix';
-import { Role, Team } from '@prisma/client';
+import { Role, type Team } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getCurrentUser } from './user';
 import { normalizeUser } from './user';
@@ -211,20 +211,20 @@ Execution Time: 0.057 ms
 
 /*
 SELECT 
-  "public"."TeamMember"."id", 
-  "public"."TeamMember"."teamId", 
-  "public"."TeamMember"."userId", 
-  "public"."TeamMember"."role"::text, 
-  "public"."TeamMember"."createdAt", 
-  "public"."TeamMember"."updatedAt" 
+    "public"."TeamMember"."id", 
+    "public"."TeamMember"."teamId", 
+    "public"."TeamMember"."userId", 
+    "public"."TeamMember"."role"::text, 
+    "public"."TeamMember"."createdAt", 
+    "public"."TeamMember"."updatedAt" 
 FROM "public"."TeamMember" LEFT JOIN "public"."Team" AS "j1" ON ("j1"."id") = ("public"."TeamMember"."teamId") 
 WHERE ("j1"."slug" = 'boxyhq' AND ("j1"."id" IS NOT NULL)) OFFSET 0;
 
 SELECT 
-  "public"."User"."id", 
-  "public"."User"."name", 
-  "public"."User"."email", 
-  "public"."User"."image" 
+    "public"."User"."id", 
+    "public"."User"."name", 
+    "public"."User"."email", 
+    "public"."User"."image" 
 FROM "public"."User" 
 WHERE "public"."User"."id" IN ('34f3bc0e-e955-400b-892e-395edc6fa727') OFFSET 0;
 */
@@ -330,7 +330,7 @@ export const throwIfNoTeamAccess = async (
 
   const { slug } = validateWithSchema(teamSlugSchema, req.query);
 
-  const teamMember = await getTeamMember(session.user.id, slug);
+  const teamMember = await getTeamMember(session.user.id as string, slug);
 
   if (!teamMember) {
     throw new Error('You do not have access to this team');
@@ -439,7 +439,7 @@ export const getCurrentUserWithTeam = async (
 
   const { slug } = validateWithSchema(teamSlugSchema, req.query);
 
-  const { role, team } = await getTeamMember(user.id, slug);
+  const { role, team } = await getTeamMember(user.id as string, slug);
 
   return {
     ...user,

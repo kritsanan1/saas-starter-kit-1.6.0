@@ -59,7 +59,7 @@ if (isAuthProviderEnabled('credentials')) {
 
         const { email, password, recaptchaToken } = credentials;
 
-        await validateRecaptcha(recaptchaToken);
+        await validateRecaptcha(recaptchaToken as string | undefined);
 
         if (!email || !password) {
           return null;
@@ -235,7 +235,7 @@ if (isAuthProviderEnabled('email')) {
 }
 
 async function createDatabaseSession(
-  user,
+  user: { id: string; name?: string | null; email?: string | null },
   req: NextApiRequest | GetServerSidePropsContext['req'],
   res: NextApiResponse | GetServerSidePropsContext['res']
 ) {

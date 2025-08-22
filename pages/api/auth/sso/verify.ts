@@ -1,7 +1,7 @@
 import env from '@/lib/env';
 import { ssoManager } from '@/lib/jackson/sso';
 import { ssoVerifySchema, validateWithSchema } from '@/lib/zod';
-import { Team } from '@prisma/client';
+import { type Team } from '@prisma/client';
 import { getTeam, getTeams } from 'models/team';
 import { getUser } from 'models/user';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -35,7 +35,7 @@ export default async function handler(
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { slug, email } = validateWithSchema(
     ssoVerifySchema,
-    JSON.parse(req.body) as { slug: string }
+    JSON.parse(req.body) as { slug?: string; email?: string }
   );
 
   if (!slug && !email) {
@@ -44,7 +44,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // If slug is provided, verify SSO connections for the team
   if (slug) {
-    const team = await getTeam({ slug });
+    const team = await getTeam({ slug: slug as string });
 
     if (!team) {
       throw new Error('Team not found.');
@@ -56,7 +56,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // If email is provided, verify SSO connections for the user
   if (email) {
-    const teams = await getTeamsFromEmail(email);
+    const teams = await getTeamsFromEmail(email as string);
 
     if (teams.length === 1) {
       const data = await handleTeamSSOVerification(teams[0].id);

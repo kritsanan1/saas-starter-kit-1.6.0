@@ -1,6 +1,5 @@
-import { z } from 'zod';
 import { isValidDomain, maxLengthPolicies, passwordPolicies } from '../common';
-import { Role } from '@prisma/client';
+import { type Role } from '@prisma/client';
 
 export const password = z
   .string({

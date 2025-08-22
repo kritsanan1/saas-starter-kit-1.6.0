@@ -49,7 +49,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { name } = validateWithSchema(createTeamSchema, req.body);
 
   const user = await getCurrentUser(req, res);
-  const slug = slugify(name);
+  const slug = slugify(name as string);
 
   if (await isTeamExists(slug)) {
     throw new ApiError(400, 'A team with the slug already exists.');
@@ -57,7 +57,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const team = await createTeam({
     userId: user.id,
-    name,
+    name: name as string,
     slug,
   });
 

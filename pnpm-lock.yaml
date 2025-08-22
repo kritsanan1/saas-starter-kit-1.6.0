@@ -80,12 +80,6 @@ importers:
       nodemailer:
         specifier: 6.9.16
         version: 6.9.16
-      package1:
-        specifier: ^0.0.0
-        version: 0.0.0
-      package2:
-        specifier: ^1.0.0
-        version: 1.0.0
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -5437,12 +5431,6 @@ packages:
   package-json@10.0.1:
     resolution: {integrity: sha512-ua1L4OgXSBdsu1FPb7F3tYH0F48a6kxvod4pLUlGY9COeJAJQNX/sNH2IiEmsxw7lqYiAwrdHMjz1FctOsyDQg==}
     engines: {node: '>=18'}
-
-  package1@0.0.0:
-    resolution: {integrity: sha512-U4a0VTa026SElK/J6JbW7/pzFZHddrAQ3OEbgCHFwXV/Ytt+Ece37GppLjP+GBRBqge7dZS9qlEOOou8m/1Fiw==}
-
-  package2@1.0.0:
-    resolution: {integrity: sha512-3vDzlSoSa6oTTnrmqO9pVJK/XWd6SvKxKVPtrom/TEn7YLWEIP8+IsXuFUwPU/Tt0aw4/VTr/VJ/V+DbTOGQpw==}
 
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -13811,10 +13799,6 @@ snapshots:
       registry-auth-token: 5.1.0
       registry-url: 6.0.1
       semver: 7.6.3
-
-  package1@0.0.0: {}
-
-  package2@1.0.0: {}
 
   parent-module@1.0.1:
     dependencies:

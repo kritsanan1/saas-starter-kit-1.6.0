@@ -1,13 +1,13 @@
 import { ApiError } from '@/lib/errors';
 import { Action, Resource, permissions } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
-import { Role, TeamMember } from '@prisma/client';
+import { Role, type TeamMember } from '@prisma/client';
 import type { Session } from 'next-auth';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from '@/lib/session';
 import { maxLengthPolicies } from '@/lib/common';
 
-export const normalizeUser = (user) => {
+export const normalizeUser = (user: { name?: string | null }) => {
   if (user?.name) {
     user.name = user.name.substring(0, maxLengthPolicies.name);
   }
@@ -26,7 +26,7 @@ export const createUser = async (data: {
   });
 };
 
-export const updateUser = async ({ where, data }) => {
+export const updateUser = async ({ where, data }: { where: any, data: any }) => {
   data = normalizeUser(data);
 
   return await prisma.user.update({
@@ -35,7 +35,7 @@ export const updateUser = async ({ where, data }) => {
   });
 };
 
-export const upsertUser = async ({ where, update, create }) => {
+export const upsertUser = async ({ where, update, create }: { where: any, update: any, create: any }) => {
   update = normalizeUser(update);
   create = normalizeUser(create);
 
@@ -74,7 +74,7 @@ export const deleteUser = async (key: { id: string } | { email: string }) => {
   });
 };
 
-export const findFirstUserOrThrow = async ({ where }) => {
+export const findFirstUserOrThrow = async ({ where }: { where: any }) => {
   const user = await prisma.user.findFirstOrThrow({
     where,
   });

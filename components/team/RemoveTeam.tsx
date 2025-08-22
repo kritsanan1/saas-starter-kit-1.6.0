@@ -1,5 +1,5 @@
 import { Card } from '@/components/shared';
-import { Team } from '@prisma/client';
+import { type Team } from '@prisma/client';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';

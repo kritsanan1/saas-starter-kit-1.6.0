@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { Subscription } from '@prisma/client';
+import { type Subscription } from '@prisma/client';
 
 export const createStripeSubscription = async ({
   customerId,

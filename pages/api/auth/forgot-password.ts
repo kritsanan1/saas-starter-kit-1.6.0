@@ -20,7 +20,7 @@ export default async function handler(
       default:
         res.setHeader('Allow', 'POST');
         res.status(405).json({
-          error: { message: `Method ${req.method} Not Allowed` },
+          error: { message: `Method ${method} Not Allowed` },
         });
     }
   } catch (error: any) {
@@ -37,13 +37,13 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     req.body
   );
 
-  await validateRecaptcha(recaptchaToken);
+  await validateRecaptcha(recaptchaToken as string | undefined);
 
-  if (!email || !validateEmail(email)) {
+  if (!email || !validateEmail(email as string)) {
     throw new ApiError(422, 'The e-mail address you entered is invalid');
   }
 
-  const user = await getUser({ email });
+  const user = await getUser({ email: email as string });
 
   if (!user) {
     throw new ApiError(422, `We can't find a user with that e-mail address`);
@@ -53,7 +53,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   await createPasswordReset({
     data: {
-      email,
+      email: email as string,
       token: resetToken,
       expiresAt: new Date(Date.now() + 60 * 60 * 1000), // Expires in 1 hour
     },

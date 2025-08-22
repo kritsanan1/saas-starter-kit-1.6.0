@@ -41,7 +41,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     throw new ApiError(422, 'Password reset token is required');
   }
 
-  const passwordReset = await getPasswordReset(token);
+  const passwordReset = await getPasswordReset(token as string);
 
   if (!passwordReset) {
     throw new ApiError(
@@ -57,7 +57,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     );
   }
 
-  const hashedPassword = await hashPassword(password);
+  const hashedPassword = await hashPassword(password as string);
 
   const updatedUser = await updateUser({
     where: { email: passwordReset.email },
@@ -79,7 +79,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
-  await deletePasswordReset(token);
+  await deletePasswordReset(token as string);
 
   recordMetric('user.password.reset');
 

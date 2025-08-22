@@ -12,7 +12,7 @@ import { recordMetric } from '@/lib/metrics';
 import { ApiError } from '@/lib/errors';
 import env from '@/lib/env';
 import { updateTeamSchema, validateWithSchema } from '@/lib/zod';
-import { Prisma, Team } from '@prisma/client';
+import { Prisma, type Team } from '@prisma/client';
 
 export default async function handler(
   req: NextApiRequest,
@@ -34,7 +34,7 @@ export default async function handler(
       default:
         res.setHeader('Allow', 'GET, PUT, DELETE');
         res.status(405).json({
-          error: { message: `Method ${req.method} Not Allowed` },
+          error: { message: `Method ${method} Not Allowed` },
         });
     }
   } catch (error: any) {

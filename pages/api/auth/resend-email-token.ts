@@ -31,14 +31,14 @@ export default async function handler(
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { email } = validateWithSchema(resendEmailToken, req.body);
 
-  const user = await getUser({ email });
+  const user = await getUser({ email: email as string });
 
   if (!user) {
     throw new ApiError(422, `We can't find a user with that e-mail address`);
   }
 
   const newVerificationToken = await createVerificationToken({
-    identifier: email,
+    identifier: email as string,
     expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours),
   });
 

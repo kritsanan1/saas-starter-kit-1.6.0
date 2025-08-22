@@ -11,7 +11,7 @@ import { recordMetric } from '@/lib/metrics';
 import { getInvitation, isInvitationExpired } from 'models/invitation';
 import { validateRecaptcha } from '@/lib/recaptcha';
 import { slackNotify } from '@/lib/slack';
-import { Team } from '@prisma/client';
+import { type Team } from '@prisma/client';
 import { createVerificationToken } from 'models/verificationToken';
 import { userJoinSchema, validateWithSchema } from '@/lib/zod';
 
@@ -89,7 +89,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
       throw new ApiError(400, 'A team name is required.');
     }
 
-    const slug = slugify(team);
+    const slug = slugify(team as string);
 
     validateWithSchema(userJoinSchema, { team, slug });
 
@@ -114,8 +114,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!invitation) {
     userTeam = await createTeam({
       userId: user.id,
-      name: team,
-      slug: slugify(team),
+      name: team as string,
+      slug: slugify(team as string),
     });
   } else {
     userTeam = await getTeam({ slug: invitation.team.slug });

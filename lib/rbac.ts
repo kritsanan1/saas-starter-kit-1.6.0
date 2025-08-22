@@ -4,7 +4,7 @@ import { getTeamMember } from 'models/team';
 
 export async function validateMembershipOperation(
   memberId: string,
-  teamMember,
+  teamMember: any,
   operationMeta?: {
     role?: Role;
   }
@@ -27,7 +27,7 @@ export async function validateMembershipOperation(
   ) {
     throw new ApiError(
       403,
-      'You do not have permission to update the role of this member.'
+      'You do not have permission to update the role of this member to Admin.'
     );
   }
 

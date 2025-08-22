@@ -1,7 +1,6 @@
 import { sendTeamInviteEmail } from '@/lib/email/sendTeamInviteEmail';
 import { ApiError } from '@/lib/errors';
 import { sendAudit } from '@/lib/retraced';
-import { getSession } from '@/lib/session';
 import { sendEvent } from '@/lib/svix';
 import {
   createInvitation,
@@ -16,7 +15,7 @@ import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
 import { extractEmailDomain, isEmailAllowed } from '@/lib/email/utils';
-import { Invitation, Role } from '@prisma/client';
+import { type Invitation, Role } from '@prisma/client';
 import { countTeamMembers } from 'models/teamMember';
 import {
   acceptInvitationSchema,
@@ -227,7 +226,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     req.query as { id: string }
   );
 
-  const invitation = await getInvitation({ id });
+  const invitation = await getInvitation({ id: id as string });
 
   if (
     invitation.invitedBy != teamMember.user.id ||
@@ -239,7 +238,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     );
   }
 
-  await deleteInvitation({ id });
+  await deleteInvitation({ id: id as string });
 
   sendAudit({
     action: 'member.invitation.delete',
@@ -262,7 +261,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     req.body as { inviteToken: string }
   );
 
-  const invitation = await getInvitation({ token: inviteToken });
+  const invitation = await getInvitation({ token: inviteToken as string });
 
   if (await isInvitationExpired(invitation.expires)) {
     throw new ApiError(400, 'Invitation expired. Please request a new one.');
@@ -303,7 +302,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   await sendEvent(invitation.team.id, 'member.created', teamMember);
 
   if (invitation.sentViaEmail) {
-    await deleteInvitation({ token: inviteToken });
+    await deleteInvitation({ token: inviteToken as string });
   }
 
   recordMetric('member.created');
