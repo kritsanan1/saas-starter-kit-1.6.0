@@ -13,6 +13,7 @@ import { Error, Loading } from '@/components/shared';
 import LinkToPortal from '@/components/billing/LinkToPortal';
 import Subscriptions from '@/components/billing/Subscriptions';
 import ProductPricing from '@/components/billing/ProductPricing';
+import { getByCustomerId } from 'models/team';
 
 const Payments = ({ teamFeatures }) => {
   const { t } = useTranslation('common');

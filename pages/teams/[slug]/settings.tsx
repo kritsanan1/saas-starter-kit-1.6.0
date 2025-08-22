@@ -7,6 +7,7 @@ import type { GetServerSidePropsContext } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { TeamFeature } from 'types';
+import { getTeamMember } from 'models/teamMember';
 
 const Settings = ({ teamFeatures }: { teamFeatures: TeamFeature }) => {
   const { t } = useTranslation('common');
@@ -46,6 +47,6 @@ export async function getServerSideProps({
       teamFeatures: env.teamFeatures,
     },
   };
-}
+};
 
 export default Settings;

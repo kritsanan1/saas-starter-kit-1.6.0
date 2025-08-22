@@ -17,7 +17,7 @@ import { randomUUID } from 'crypto';
 
 import { Role } from '@prisma/client';
 import { getAccount } from 'models/account';
-import { addTeamMember, getTeam } from 'models/team';
+import { getTeam } from 'models/team';
 import { createUser, getUser } from 'models/user';
 import { verifyPassword } from '@/lib/auth';
 import { isEmailAllowed } from '@/lib/email/utils';
@@ -34,6 +34,7 @@ import {
 import { slackNotify } from './slack';
 import { maxLengthPolicies } from '@/lib/common';
 import { forceConsume } from '@/lib/server-common';
+import { addTeamMember } from 'models/teamMember';
 
 const adapter = PrismaAdapter(prisma);
 const providers: Provider[] = [];

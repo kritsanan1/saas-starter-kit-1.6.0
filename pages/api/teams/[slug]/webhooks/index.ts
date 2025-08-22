@@ -2,7 +2,6 @@ import { ApiError } from '@/lib/errors';
 import { sendAudit } from '@/lib/retraced';
 import {
   createWebhook,
-  deleteWebhook,
   findOrCreateApp,
   createEventType,
   listWebhooks,
@@ -18,6 +17,7 @@ import {
   validateWithSchema,
   webhookEndpointSchema,
 } from '@/lib/zod';
+import { deleteWebhook } from '@/lib/svix';
 
 export default async function handler(
   req: NextApiRequest,

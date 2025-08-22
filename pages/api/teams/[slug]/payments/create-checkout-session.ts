@@ -5,6 +5,7 @@ import { throwIfNoTeamAccess } from 'models/team';
 import { stripe, getStripeCustomerId } from '@/lib/stripe';
 import env from '@/lib/env';
 import { checkoutSessionSchema, validateWithSchema } from '@/lib/zod';
+import Stripe from 'stripe';
 
 export default async function handler(
   req: NextApiRequest,
@@ -40,7 +41,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const customer = await getStripeCustomerId(teamMember, session);
 
   const checkoutSession = await stripe.checkout.sessions.create({
-    customer,
+    customer: customer as string,
     mode: 'subscription',
     line_items: [
       {
@@ -55,7 +56,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
     success_url: `${env.appUrl}/teams/${teamMember.team.slug}/billing`,
     cancel_url: `${env.appUrl}/teams/${teamMember.team.slug}/billing`,
-  });
+  } as Stripe.Checkout.SessionCreateParams);
 
   res.json({ data: checkoutSession });
 };

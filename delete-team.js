@@ -3,6 +3,9 @@ const prisma = new PrismaClient();
 const jackson = require('@boxyhq/saml-jackson');
 const readline = require('readline');
 const { Svix } = require('svix');
+const { getTeam, updateTeam, deleteTeam } = require('./models/team');
+const { getTeamMembers, removeTeamMember, countTeamMembers } = require('./models/teamMember');
+
 
 const svix = process.env.SVIX_API_KEY
   ? new Svix(`${process.env.SVIX_API_KEY}`)
@@ -102,7 +105,7 @@ async function init() {
 
 async function displayDeletionArtifacts(teamId) {
   // Team Details
-  const team = await getTeamById(teamId);
+  const team = await getTeam({id: teamId});
   if (!team) {
     throw new Error(`Team not found: ${teamId}`);
   }
@@ -222,7 +225,7 @@ async function displayDeletionArtifacts(teamId) {
 
 async function handleTeamDeletion(teamId) {
   console.log(`\nChecking team: ${teamId}`);
-  let team = await getTeamById(teamId);
+  let team = await getTeam({id: teamId});
   if (!team) {
     console.log(`Team not found: ${teamId}`);
     return;
@@ -248,83 +251,8 @@ async function handleTeamDeletion(teamId) {
 
     await removeSvixApplication(team.id);
 
-    await removeTeam(team);
+    await deleteTeam({id: team.id});
   }
-}
-
-async function getTeamById(teamId) {
-  return await prisma.team.findUnique({
-    where: {
-      id: teamId,
-    },
-  });
-}
-
-async function removeTeam(team) {
-  console.log('\nDeleting team:', team.id);
-  await prisma.team.delete({
-    where: {
-      id: team.id,
-    },
-  });
-  console.log('Team deleted:', team.name);
-}
-
-async function removeSSOConnections(team) {
-  const params = {
-    tenant: team.id,
-    product,
-  };
-  if (useHostedJackson) {
-    const ssoUrl = `${process.env.JACKSON_URL}/api/v1/sso`;
-    const query = new URLSearchParams(params);
-
-    const response = await fetch(`${ssoUrl}?${query}`, {
-      ...jacksonOptions,
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      const result = await response.json();
-      throw new Error(result.error.message);
-    }
-  } else {
-    const { apiController } = jacksonInstance;
-
-    await apiController.deleteConnections(params);
-  }
-}
-
-async function getSSOConnections(params) {
-  if (useHostedJackson) {
-    const ssoUrl = `${process.env.JACKSON_URL}/api/v1/sso`;
-    const query = new URLSearchParams(params);
-
-    const response = await fetch(`${ssoUrl}?${query}`, {
-      ...jacksonOptions,
-    });
-    if (!response.ok) {
-      const result = await response.json();
-      throw new Error(result.error.message);
-    }
-    const data = await response.json();
-    return data;
-  } else {
-    const { apiController } = jacksonInstance;
-
-    return await apiController.getConnections(params);
-  }
-}
-
-async function removeDSyncConnections(team) {
-  console.log(`\nChecking team DSync connections`);
-  const connections = await getConnections(team.id);
-  console.log(`Found ${connections.length} DSync connections`);
-  for (const connection of connections) {
-    console.log('\nDeleting DSync connection:', connection.id);
-    await deleteConnection(connection.id);
-    console.log('DSync connection deleted:', connection.id);
-  }
-  console.log(`\nDone removing team DSync connections`);
 }
 
 async function removeTeamSubscriptions(team) {
@@ -361,25 +289,12 @@ async function getActiveSubscriptions(team) {
 async function removeTeamMembers(team) {
   console.log('\nChecking team members');
 
-  const teamMembers = await prisma.user.findMany({
-    where: {
-      teamMembers: {
-        some: {
-          teamId: team.id,
-        },
-      },
-    },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-    },
-  });
+  const teamMembers = await getTeamMembers(team.slug);
   console.log(`Found ${teamMembers.length} team members`);
   printTable(teamMembers);
 
   for (const user of teamMembers) {
-    await checkAndRemoveUser(user, team);
+    await checkAndRemoveUser(user.user, team);
   }
 }
 
@@ -401,12 +316,7 @@ async function checkAndRemoveUser(user, team) {
     console.log('User deleted:', user.email);
   } else {
     console.log('Removing user from team:', team.name);
-    await prisma.teamMember.deleteMany({
-      where: {
-        userId: user.id,
-        teamId: team.id,
-      },
-    });
+    await removeTeamMember(team.id, user.id);
     console.log('User removed from team:', team.name);
   }
 }
@@ -538,3 +448,48 @@ process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
   process.exit(1);
 });
+
+async function getSSOConnections(params) {
+  if (useHostedJackson) {
+    const ssoUrl = `${process.env.JACKSON_URL}/api/v1/sso`;
+    const query = new URLSearchParams(params);
+
+    const response = await fetch(`${ssoUrl}?${query}`, {
+      ...jacksonOptions,
+    });
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error.message);
+    }
+    const data = await response.json();
+    return data;
+  } else {
+    const { apiController } = jacksonInstance;
+
+    return await apiController.getConnections(params);
+  }
+}
+
+async function removeSSOConnections(team) {
+  const params = {
+    tenant: team.id,
+    product,
+  };
+  if (useHostedJackson) {
+    const ssoUrl = `${process.env.JACKSON_URL}/api/v1/sso`;
+    const query = new URLSearchParams(params);
+
+    const response = await fetch(`${ssoUrl}?${query}`, {
+      ...jacksonOptions,
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error.message);
+    }
+  } else {
+    const { apiController } = jacksonInstance;
+
+    await apiController.deleteConnections(params);
+  }
+}

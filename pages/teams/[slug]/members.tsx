@@ -6,6 +6,7 @@ import useTeam from 'hooks/useTeam';
 import { GetServerSidePropsContext } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { getTeamMember } from 'models/teamMember';
 
 const TeamMembers = ({ teamFeatures }) => {
   const { t } = useTranslation('common');
@@ -43,6 +44,6 @@ export async function getServerSideProps({
       teamFeatures: env.teamFeatures,
     },
   };
-}
+};
 
 export default TeamMembers;
