@@ -2,13 +2,11 @@ import { ApiError } from '@/lib/errors';
 import { sendAudit } from '@/lib/retraced';
 import { sendEvent } from '@/lib/svix';
 import { Role } from '@prisma/client';
-import {
-  throwIfNoTeamAccess,
-} from 'models/team';
+import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
-import { countTeamMembers, updateTeamMember, getTeamMembers, removeTeamMember } from 'models/teamMember';
+import { countTeamMembers, updateTeamMember, getTeamMembers, removeTeamMember } from 'models/teamMember'; // Updated imports
 import { validateMembershipOperation } from '@/lib/rbac';
 import {
   deleteMemberSchema,

@@ -1,8 +1,7 @@
 import { DirectorySyncEvent } from '@boxyhq/saml-jackson';
 import { Role } from '@prisma/client';
-import { getTeam } from 'models/team';
-import { addTeamMember, removeTeamMember, countTeamMembers } from 'models/teamMember';
 import { deleteUser, getUser, updateUser, upsertUser } from 'models/user';
+import { addTeamMember, countTeamMembers, removeTeamMember } from 'models/teamMember'; // Updated imports
 
 // Handle SCIM events
 export const handleEvents = async (event: DirectorySyncEvent) => {

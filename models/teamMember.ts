@@ -1,8 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import { Role, type TeamMember, type User } from '@prisma/client';
-import { normalizeUser } from './user';
-
-export type TeamMemberWithUser = TeamMember & { user: User };
+import { Role, type TeamMember } from '@prisma/client';
+import { normalizeUser } from './user'; // Import normalizeUser from models/user
 
 export const countTeamMembers = async ({ where }) => {
   return await prisma.teamMember.count({
@@ -75,7 +73,7 @@ export const getTeamMembers = async (slug: string) => {
   });
 };
 
-export async function getTeamRoles(userId: string) {
+export const getTeamRoles = async (userId: string) => {
   return await prisma.teamMember.findMany({
     where: {
       userId,
@@ -85,9 +83,9 @@ export async function getTeamRoles(userId: string) {
       role: true,
     },
   });
-}
+};
 
-export async function isTeamAdmin(userId: string, teamId: string) {
+export const isTeamAdmin = async (userId: string, teamId: string) => {
   const teamMember = await prisma.teamMember.findUniqueOrThrow({
     where: {
       teamId_userId: {
@@ -98,7 +96,7 @@ export async function isTeamAdmin(userId: string, teamId: string) {
   });
 
   return teamMember.role === Role.ADMIN || teamMember.role === Role.OWNER;
-}
+};
 
 export const getTeamMember = async (userId: string, slug: string) => {
   return await prisma.teamMember.findFirstOrThrow({

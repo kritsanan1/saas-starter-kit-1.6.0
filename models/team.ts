@@ -5,8 +5,7 @@ import { type Team } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getCurrentUser } from './user';
 import { validateWithSchema, teamSlugSchema } from '@/lib/zod';
-import { addTeamMember } from './teamMember';
-import { Role } from '@prisma/client';
+import { addTeamMember, getTeamMember } from './teamMember'; // Import from teamMember
 
 export const createTeam = async (param: {
   userId: string;
@@ -22,7 +21,7 @@ export const createTeam = async (param: {
     },
   });
 
-  await addTeamMember(team.id, userId, Role.OWNER);
+  await addTeamMember(team.id, userId, 'OWNER'); // Use 'OWNER' string directly or import Role enum
 
   await findOrCreateApp(team.name, team.id);
 
@@ -48,23 +47,6 @@ export const getTeam = async (key: { id: string } | { slug: string }) => {
 export const deleteTeam = async (key: { id: string } | { slug: string }) => {
   return await prisma.team.delete({
     where: key,
-  });
-};
-
-export const getTeams = async (userId: string) => {
-  return await prisma.team.findMany({
-    where: {
-      members: {
-        some: {
-          userId,
-        },
-      },
-    },
-    include: {
-      _count: {
-        select: { members: true },
-      },
-    },
   });
 };
 
@@ -99,20 +81,7 @@ export const throwIfNoTeamAccess = async (
 
   const { slug } = validateWithSchema(teamSlugSchema, req.query);
 
-  const teamMember = await prisma.teamMember.findFirstOrThrow({
-    where: {
-      userId: session.user.id as string,
-      team: {
-        slug,
-      },
-      role: {
-        in: ['ADMIN', 'MEMBER', 'OWNER'],
-      },
-    },
-    include: {
-      team: true,
-    },
-  });
+  const teamMember = await getTeamMember(session.user.id as string, slug);
 
   if (!teamMember) {
     throw new Error('You do not have access to this team');
@@ -135,24 +104,28 @@ export const getCurrentUserWithTeam = async (
 
   const { slug } = validateWithSchema(teamSlugSchema, req.query);
 
-  const { role, team } = await prisma.teamMember.findFirstOrThrow({
-    where: {
-      userId: user.id as string,
-      team: {
-        slug,
-      },
-      role: {
-        in: ['ADMIN', 'MEMBER', 'OWNER'],
-      },
-    },
-    include: {
-      team: true,
-    },
-  });
+  const { role, team } = await getTeamMember(user.id as string, slug);
 
   return {
     ...user,
     role,
     team,
   };
+};
+
+export const getTeams = async (userId: string) => {
+  return await prisma.team.findMany({
+    where: {
+      members: {
+        some: {
+          userId,
+        },
+      },
+    },
+    include: {
+      _count: {
+        select: { members: true },
+      },
+    },
+  });
 };

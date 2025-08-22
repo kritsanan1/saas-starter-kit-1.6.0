@@ -10,13 +10,13 @@ import {
   getInvitations,
   isInvitationExpired,
 } from 'models/invitation';
-import { addTeamMember, throwIfNoTeamAccess } from 'models/team';
+import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
 import { extractEmailDomain, isEmailAllowed } from '@/lib/email/utils';
 import { type Invitation, Role } from '@prisma/client';
-import { countTeamMembers } from 'models/teamMember';
+import { addTeamMember, countTeamMembers } from 'models/teamMember'; // Updated imports
 import {
   acceptInvitationSchema,
   deleteInvitationSchema,

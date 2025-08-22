@@ -34,7 +34,7 @@ import {
 import { slackNotify } from './slack';
 import { maxLengthPolicies } from '@/lib/common';
 import { forceConsume } from '@/lib/server-common';
-import { addTeamMember } from 'models/teamMember';
+import { addTeamMember } from 'models/teamMember'; // Updated import
 
 const adapter = PrismaAdapter(prisma);
 const providers: Provider[] = [];
